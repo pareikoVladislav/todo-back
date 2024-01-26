@@ -10,6 +10,7 @@ from apps.task.error_messages import (
     TITLE_REQUIRED_ERROR_MESSAGE,
 )
 from apps.task.models import Task
+from apps.subtask.serializers import SubTaskPreviewSerializer
 
 
 def validate_fields(attrs):
@@ -44,7 +45,7 @@ def validate_fields(attrs):
 
 
 class TaskInfoSerializer(serializers.ModelSerializer):
-    # subtasks = SubTaskPreviewSerializer(many=True, read_only=True)
+    subtasks = SubTaskPreviewSerializer(many=True, read_only=True)
 
     category = serializers.StringRelatedField()
     status = serializers.StringRelatedField()
@@ -60,7 +61,7 @@ class TaskInfoSerializer(serializers.ModelSerializer):
             'date_started',
             'deadline',
             'created_at',
-            # 'subtasks'
+            'subtasks'
         ]
 
     def validate(self, attrs):
