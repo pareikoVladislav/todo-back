@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "apps.user.apps.UserConfig",
     "apps.category.apps.CategoryConfig",
     "apps.status.apps.StatusConfig",
+    "apps.task.apps.TaskConfig",
 ]
 
 MIDDLEWARE = [
