@@ -5,4 +5,5 @@ urlpatterns = [
     path('categories/', include('apps.category.urls')),
     path('statuses/', include('apps.status.urls')),
     path('tasks/', include('apps.task.urls')),
+    path('subtasks/', include('apps.subtask.urls')),
 ]
