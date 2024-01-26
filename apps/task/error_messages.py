@@ -1,0 +1,5 @@
+TITLE_REQUIRED_ERROR_MESSAGE = "The title for your new task is required"
+TITLE_LENGTH_ERROR_MESSAGE = "The title should contain no more than 75 characters"
+DESCRIPTION_LENGTH_ERROR_MESSAGE = "The description should contain no more than 1500 characters"
+INCORRECT_DATE_STARTED_ERROR_MESSAGE = "The start date cannot be in the past."
+INCORRECT_DEADLINE_ERROR_MESSAGE = "The deadline cannot be earlier than the start date."
