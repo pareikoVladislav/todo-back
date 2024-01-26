@@ -73,17 +73,6 @@ class Task(models.Model):
 
         return count
 
-    # @property
-    # def count_subtasks(self):
-    #     try:
-    #         count = SubTask.objects.filter(
-    #             task=self.id
-    #         ).count()
-    #     except SubTask.DoesNotExist:
-    #         return 0
-    #
-    #     return count
-
     class Meta:
         verbose_name = 'Task'
         verbose_name_plural = 'Tasks'
