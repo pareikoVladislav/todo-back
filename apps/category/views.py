@@ -20,6 +20,7 @@ from apps.category.serializers import (
 
 
 class CategoryListGenericView(ListAPIView):
+    permission_classes = [IsAuthenticated,]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
 
@@ -61,6 +62,7 @@ class CategoryListGenericView(ListAPIView):
 
 
 class RetrieveCategoryGenericView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = CategorySerializer
 
     def get_object(self):
