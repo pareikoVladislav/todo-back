@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "apps.category.apps.CategoryConfig",
     "apps.status.apps.StatusConfig",
     "apps.task.apps.TaskConfig",
-    "apps.subtask.apps.SubTaskConfig",
+    "apps.subtask.apps.SubtaskConfig",
 ]
 
 MIDDLEWARE = [
