@@ -2,15 +2,17 @@ import datetime
 
 from rest_framework import serializers
 
-from apps.task.error_messages import (
+from apps.category.models import Category
+from apps.status.models import Status
+from apps.subtask.models import SubTask
+from apps.user.models import User
+from apps.subtask.error_messages import (
     TITLE_LENGTH_ERROR_MESSAGE,
-    DESCRIPTION_LENGTH_ERROR_MESSAGE,
+    TITLE_REQUIRED_ERROR_MESSAGE,
     INCORRECT_DATE_STARTED_ERROR_MESSAGE,
     INCORRECT_DEADLINE_ERROR_MESSAGE,
-    TITLE_REQUIRED_ERROR_MESSAGE,
+    DESCRIPTION_LENGTH_ERROR_MESSAGE
 )
-from apps.task.models import Task
-from apps.subtask.serializers import SubTaskPreviewSerializer
 
 
 def validate_fields(attrs):
@@ -19,12 +21,12 @@ def validate_fields(attrs):
     date_started = attrs.get('date_started')
     deadline = attrs.get('deadline')
 
-    if not title:
+    if title is None:
         raise serializers.ValidationError(
             TITLE_REQUIRED_ERROR_MESSAGE
         )
 
-    if len(title) > 75:
+    if title and len(title) > 75:
         raise serializers.ValidationError(
             TITLE_LENGTH_ERROR_MESSAGE
         )
@@ -44,40 +46,30 @@ def validate_fields(attrs):
     return attrs
 
 
-class TaskInfoSerializer(serializers.ModelSerializer):
-    subtasks = SubTaskPreviewSerializer(many=True, read_only=True)
-
-    category = serializers.StringRelatedField()
-    status = serializers.StringRelatedField()
+class ListSubTasksSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Category.objects.all()
+    )
+    status = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Status.objects.all()
+    )
+    creator = serializers.SlugRelatedField(
+        slug_field='email',
+        queryset=User.objects.all()
+    )
 
     class Meta:
-        model = Task
+        model = SubTask
         fields = [
             'id',
             'title',
             'description',
             'category',
+            'task',
             'status',
-            'date_started',
-            'deadline',
-            'created_at',
-            'subtasks'
-        ]
-
-    def validate(self, attrs):
-        return validate_fields(attrs=attrs)
-
-
-class AllTasksSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Task
-        fields = [
-            'id',
-            'title',
-            'description',
             'creator',
-            'category',
-            'status',
             'date_started',
             'deadline',
             'created_at'
@@ -85,3 +77,43 @@ class AllTasksSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         return validate_fields(attrs=attrs)
+
+
+class SubTaskInfoSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Category.objects.all()
+    )
+    status = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Status.objects.all()
+    )
+
+    creator = serializers.SlugRelatedField(
+        slug_field='email',
+        queryset=User.objects.all()
+    )
+
+    class Meta:
+        model = SubTask
+        fields = [
+            'id',
+            'title',
+            'description',
+            'category',
+            'status',
+            'creator',
+            'date_started',
+            'deadline'
+        ]
+
+    def validate(self, attrs):
+        return validate_fields(attrs=attrs)
+
+
+class SubTaskPreviewSerializer(serializers.ModelSerializer):
+    status = serializers.StringRelatedField()
+
+    class Meta:
+        model = SubTask
+        fields = ['id', 'title', 'status']

@@ -3,30 +3,24 @@ from django.db import models
 from apps.user.models import User
 from apps.category.models import Category
 from apps.status.models import Status
+from apps.task.models import Task
 
 
-class Task(models.Model):
-    title = models.CharField(
-        max_length=75,
-        default="DEFAULT TITLE",
-        unique_for_date='date_started'
-    )
-    description = models.TextField(
-        max_length=1500,
-        verbose_name="task details",
-        default="Here you can add your description..."
-    )
-    creator = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True
-    )
+class SubTask(models.Model):
+    title = models.CharField(max_length=75, blank=True)
+    description = models.CharField(max_length=1500, blank=True)
     category = models.ForeignKey(
         Category,
         null=True,
         blank=True,
         on_delete=models.SET_NULL
+    )
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        related_name='subtasks',
+        blank=True,
+        null=True
     )
     status = models.ForeignKey(
         Status,
@@ -34,16 +28,14 @@ class Task(models.Model):
         blank=True,
         null=True
     )
-    date_started = models.DateField(
-        help_text="День, когда задача должна начаться",
+    creator = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
         blank=True,
         null=True
     )
-    deadline = models.DateField(
-        help_text="День, когда задача должна быть выполнена",
-        blank=True,
-        null=True
-    )
+    date_started = models.DateField(blank=True)
+    deadline = models.DateField(blank=True)
     created_at = models.DateTimeField(
         auto_now_add=True
     )
@@ -59,7 +51,7 @@ class Task(models.Model):
         except Status.DoesNotExist:
             return 0
 
-        count = Task.objects.filter(status=status).count()
+        count = SubTask.objects.filter(status=status).count()
 
         return count
 
@@ -69,10 +61,10 @@ class Task(models.Model):
         except Category.DoesNotExist:
             return 0
 
-        count = Task.objects.filter(category=category).count()
+        count = SubTask.objects.filter(category=category).count()
 
         return count
 
     class Meta:
-        verbose_name = 'Task'
-        verbose_name_plural = 'Tasks'
+        verbose_name = 'SubTask'
+        verbose_name_plural = 'SubTasks'
