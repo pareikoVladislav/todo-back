@@ -63,3 +63,40 @@ class TestStatusListGenericView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('name', response.data)
         self.assertEqual(Status.objects.count(), 0)
+
+
+class TestRetrieveStatusGenericView(TestCase, TestStatusListGenericView):
+
+    def setUp(self):
+        super().setUp()
+
+    def test_get_status_by_id(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f'http://127.0.0.1:8000/api/v1/statuses/{self.status.id}/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response.data['status'], str)
+        self.assertContains(response, self.status)
+
+    def test_update_status_valid_data(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(
+            f'http://127.0.0.1:8000/api/v1/statuses/{self.status.id}/',
+            {'name': 'UpdatedStatus'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'UpdatedStatus')
+        self.assertEqual(response.data['message'], STATUS_UPDATED_SUCCESSFULLY_MESSAGE)
+
+    def test_update_category_invalid_data(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(
+            f'http://127.0.0.1:8000/api/v1/statuses/{self.status.id}/',
+            {'name': ''})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_delete_status(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(f'http://127.0.0.1:8000/api/v1/statuses/{self.status.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], STATUS_WAS_DELETED_SUCCESSFUL)
