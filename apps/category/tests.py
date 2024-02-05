@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 from apps.category.success_messages import NEW_CATEGORY_CREATED_MESSAGE
 
 
-class CategoryListGenericViewTest(TestCase):
+class TestCategoryListGenericView(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -62,7 +62,7 @@ class CategoryListGenericViewTest(TestCase):
         self.assertEqual(Category.objects.count(), 0)
 
 
-class TestRetrieveCategoryGenericView(TestCase, CategoryListGenericViewTest):
+class TestRetrieveCategoryGenericView(TestCase, TestCategoryListGenericView):
 
     def setUp(self):
         super().setUp()
