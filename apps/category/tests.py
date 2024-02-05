@@ -7,6 +7,7 @@ from apps.category.success_messages import (NEW_CATEGORY_CREATED_MESSAGE,
                                             CATEGORY_UPDATED_SUCCESSFULLY_MESSAGE,
                                             CATEGORY_WAS_DELETED_SUCCESSFUL)
 
+
 class TestCategoryListGenericView(TestCase):
 
     def setUp(self):
@@ -76,7 +77,7 @@ class TestRetrieveCategoryGenericView(TestCase, TestCategoryListGenericView):
         self.assertIsInstance(response.data['category'], str)
         self.assertContains(response, self.category)
 
-    def test_update_category(self):
+    def test_update_category_valid_data(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.put(
             f'http://127.0.0.1:8000/api/v1/categories/{self.category.id}/',
@@ -85,6 +86,13 @@ class TestRetrieveCategoryGenericView(TestCase, TestCategoryListGenericView):
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name, 'UpdatedName')
         self.assertEqual(response.data['message'], CATEGORY_UPDATED_SUCCESSFULLY_MESSAGE)
+
+    def test_update_category_invalid_data(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(
+            f'http://127.0.0.1:8000/api/v1/categories/{self.category.id}/',
+            {'name': ''})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_delete_category(self):
         self.client.force_authenticate(user=self.user)
