@@ -3,8 +3,9 @@ from rest_framework import status
 from apps.category.models import Category
 from apps.user.models import User
 from rest_framework.test import APIClient
-from apps.category.success_messages import NEW_CATEGORY_CREATED_MESSAGE
-
+from apps.category.success_messages import (NEW_CATEGORY_CREATED_MESSAGE,
+                                            CATEGORY_UPDATED_SUCCESSFULLY_MESSAGE,
+                                            CATEGORY_WAS_DELETED_SUCCESSFUL)
 
 class TestCategoryListGenericView(TestCase):
 
@@ -83,8 +84,10 @@ class TestRetrieveCategoryGenericView(TestCase, TestCategoryListGenericView):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name, 'UpdatedName')
+        self.assertEqual(response.data['message'], CATEGORY_UPDATED_SUCCESSFULLY_MESSAGE)
 
     def test_delete_category(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.delete(f'http://127.0.0.1:8000/api/v1/categories/{self.category.id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], CATEGORY_WAS_DELETED_SUCCESSFUL)
