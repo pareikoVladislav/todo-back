@@ -49,7 +49,7 @@ class TestCategoryListGenericView(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['message'], NEW_CATEGORY_CREATED_MESSAGE)
-        self.assertEqual(response.data['data']['name'], 'Test Category')
+        self.assertEqual(response.data['data']['name'], 'New Category')
         self.assertTrue(Category.objects.filter(name='New Category').exists())
 
     def test_post_category_invalid_data(self):
