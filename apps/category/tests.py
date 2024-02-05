@@ -41,14 +41,14 @@ class CategoryListGenericViewTest(TestCase):
     def test_post_category_valid_data(self):
         self.client.force_authenticate(user=self.user)
         data = {
-            'name': 'Test Category'
+            'name': 'New Category'
         }
         response = self.client.post(f'http://127.0.0.1:8000/api/v1/categories/', data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['message'], NEW_CATEGORY_CREATED_MESSAGE)
         self.assertEqual(response.data['data']['name'], 'Test Category')
-        self.assertTrue(Category.objects.filter(name='Test Category').exists())
+        self.assertTrue(Category.objects.filter(name='New Category').exists())
 
     def test_post_category_invalid_data(self):
         self.client.force_authenticate(user=self.user)
@@ -60,3 +60,31 @@ class CategoryListGenericViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('name', response.data)
         self.assertEqual(Category.objects.count(), 0)
+
+
+class TestRetrieveCategoryGenericView(TestCase, CategoryListGenericViewTest):
+
+    def setUp(self):
+        super().setUp()
+
+    def test_get_category_by_id(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f'http://127.0.0.1:8000/api/v1/categories/{self.category.id}/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response.data['category'], str)
+        self.assertContains(response, self.category)
+
+    def test_update_category(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(
+            f'http://127.0.0.1:8000/api/v1/categories/{self.category.id}/',
+            {'name': 'UpdatedName'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'UpdatedName')
+
+    def test_delete_category(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(f'http://127.0.0.1:8000/api/v1/categories/{self.category.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
